@@ -115,6 +115,7 @@ def get_pending():
 @app.route("/", methods=["GET"])
 def index():
     return jsonify({"status": "dream-keeper running"})
+    
 @app.route("/api/dream/status", methods=["GET"])
 def get_status():
     events = get_recent_events()
