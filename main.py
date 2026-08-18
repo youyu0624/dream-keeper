@@ -109,7 +109,11 @@ def log_event():
 @app.route("/api/dream/status", methods=["GET"])
 def get_status():
     events = get_recent_events()
-    events_str = "\n".join([f"- {e['type']}: {e['value']} ({e['created_at']})" for e in events]) if events else "没有记录"
+    def to_beijing(utc_str):
+        utc_time = datetime.fromisoformat(utc_str.replace("+00:00", ""))
+        beijing_time = utc_time + timedelta(hours=8)
+        return beijing_time.strftime("%m-%d %H:%M")
+    events_str = "\n".join([f"- {e['type']}: {e['value']} ({to_beijing(e['created_at'])})" for e in events]) if events else "没有记录"
     return jsonify({"recent_activity": events_str})
 
 @app.route("/api/messages/pending", methods=["GET"])
