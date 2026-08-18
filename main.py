@@ -106,6 +106,12 @@ def log_event():
         supabase.table("dream_events").insert({"type": event_type, "value": value}).execute()
     return jsonify({"ok": True})
 
+@app.route("/api/dream/status", methods=["GET"])
+def get_status():
+    events = get_recent_events()
+    events_str = "\n".join([f"- {e['type']}: {e['value']} ({e['created_at']})" for e in events]) if events else "没有记录"
+    return jsonify({"recent_activity": events_str})
+
 @app.route("/api/messages/pending", methods=["GET"])
 def get_pending():
     result = supabase.table("messages").select("*")\
@@ -115,12 +121,6 @@ def get_pending():
 @app.route("/", methods=["GET"])
 def index():
     return jsonify({"status": "dream-keeper running"})
-    
-@app.route("/api/dream/status", methods=["GET"])
-def get_status():
-    events = get_recent_events()
-    events_str = "\n".join([f"- {e['type']}: {e['value']} ({e['created_at']})" for e in events]) if events else "没有记录"
-    return jsonify({"recent_activity": events_str})
 
 if __name__ == "__main__":
     scheduler = BackgroundScheduler()
